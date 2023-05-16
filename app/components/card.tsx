@@ -8,7 +8,7 @@ import {
 import { PropsWithChildren } from "react";
 
 interface CardProps extends PropsWithChildren {
-	slug: string
+	slug?: string
 }
 
 export const Card: React.FC<CardProps> = ({ children, slug }) => {
