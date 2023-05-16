@@ -3,7 +3,6 @@ import React from "react";
 import { allProjects } from "contentlayer/generated";
 import { Navigation } from "../components/nav";
 import { Card } from "../components/card";
-// import { Article } from "./article";
 import { Redis } from "@upstash/redis";
 import { Eye } from "lucide-react";
 
@@ -13,19 +12,12 @@ export const revalidate = 60;
 export default async function ProjectsPage() {
 	const views = (
 		await redis.mget<number[]>(
-			...allProjects.map((p) => ["pageviews", "projects", p.slug].join(":")),
+			...allProjects.map((p) => p.slug),
 		)
 	).reduce((acc, v, i) => {
 		acc[allProjects[i].slug] = v ?? 0;
 		return acc;
 	}, {} as Record<string, number>);
-
-	// const featured = allProjects.find(
-	// 	(project) => project.slug === "fiatbarigui",
-	// )!;
-
-	// const top2 = allProjects.find((project) => project.slug === "envshare")!;
-	// const top3 = allProjects.find((project) => project.slug === "qstash")!;
 
 	return (
 		<div className="relative pb-16">
@@ -41,9 +33,9 @@ export default async function ProjectsPage() {
 				</div>
 				<div className="w-full h-px bg-zinc-800" />
 
-				<div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-2 ">
+				<div className="grid grid-cols-1 gap-8 mx-auto lg:grid-cols-2">
           {allProjects.map(p => (
-            <Card>
+            <Card slug={p.slug}>
 						<Link href={p.url as string} target="_blank">
 							<article className="relative h-full w-full p-4 md:p-8">
 								<div className="flex justify-between gap-2 items-center">
@@ -81,13 +73,6 @@ export default async function ProjectsPage() {
 						</Link>
 					</Card>
           ))}
-					{/* <div className="flex flex-col w-full gap-8  mx-auto border-t border-gray-900/10  lg:mx-0  lg:border-t-0 ">
-						{[top2, top3].map((project) => (
-							<Card key={project.slug}>
-								<Article project={project} views={views[project.slug] ?? 0} />
-							</Card>
-						))}
-					</div> */}
 				</div>
 			</div>
 		</div>

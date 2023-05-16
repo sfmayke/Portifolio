@@ -2,13 +2,16 @@
 import {
 	motion,
 	useMotionTemplate,
-	useMotionValue,
 	useSpring,
 } from "framer-motion";
 
-import { MouseEventHandler, PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 
-export const Card: React.FC<PropsWithChildren> = ({ children }) => {
+interface CardProps extends PropsWithChildren {
+	slug: string
+}
+
+export const Card: React.FC<CardProps> = ({ children, slug }) => {
 	const mouseX = useSpring(0, { stiffness: 500, damping: 100 });
 	const mouseY = useSpring(0, { stiffness: 500, damping: 100 });
 
@@ -20,8 +23,19 @@ export const Card: React.FC<PropsWithChildren> = ({ children }) => {
 	let maskImage = useMotionTemplate`radial-gradient(240px at ${mouseX}px ${mouseY}px, white, transparent)`;
 	let style = { maskImage, WebkitMaskImage: maskImage };
 
+	function incrViews() {
+		fetch("/api/incr", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ slug: slug }),
+		});
+	}
+
 	return (
 		<div
+			onClick={incrViews}
 			onMouseMove={onMouseMove}
 			className="overflow-hidden relative duration-700 border rounded-xl hover:bg-zinc-800/10 group md:gap-8 hover:border-zinc-400/50 border-zinc-600 "
 		>
